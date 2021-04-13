@@ -1,0 +1,17 @@
+{
+  "name": "PyCharm",
+  "version": "2020.1",
+  "buildNumber": "201.6668.147",
+  "productCode": "PE",
+  "dataDirectoryName": "PyCharmEdu2020.1",
+  "svgIconPath": "bin/pycharm.svg",
+  "launch": [
+    {
+      "os": "Linux",
+      "launcherPath": "bin/pycharm.sh",
+      "javaExecutablePath": "jbr/bin/java",
+      "vmOptionsFilePath": "bin/pycharm64.vmoptions",
+      "startupWmClass": "jetbrains-pycharm-edu"
+    }
+  ]
+}

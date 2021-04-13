@@ -1,0 +1,18 @@
+version: "3.5"
+
+services:
+  redis:
+    container_name: redis
+    image: redis:${REDIS_VERSION:-6}-alpine
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - ${REDIS_EXPOSE_PORT:-16379}:6379
+    networks:
+      development-network:
+
+networks:
+  development-network:
+    name: dev-net
+    driver: bridge
