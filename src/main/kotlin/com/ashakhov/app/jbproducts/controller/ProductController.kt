@@ -1,21 +1,16 @@
 package com.ashakhov.app.jbproducts.controller
 
-import com.ashakhov.app.jbproducts.model.ProductInfo
 import com.ashakhov.app.jbproducts.model.ReleasedProduct
-import com.ashakhov.app.jbproducts.service.ProductInfoService
 import com.ashakhov.app.jbproducts.service.ReleasedProductService
-import com.ashakhov.app.jbproducts.service.ScheduledTaskService
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import reactor.core.publisher.Flux
 
 @RestController
 @RequestMapping("/products")
-class ProductController(val productService: ReleasedProductService,
-                        val productInfoService: ProductInfoService) {
+class ProductController(val productService: ReleasedProductService) {
 
     @GetMapping(produces = [MediaType.APPLICATION_NDJSON_VALUE])
     fun getProductsInfo(): List<ReleasedProduct> {

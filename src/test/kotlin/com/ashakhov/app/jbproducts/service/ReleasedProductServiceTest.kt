@@ -25,8 +25,8 @@ internal class ReleasedProductServiceTest(@Autowired val productService: Release
 
     companion object {
         @Container
-        val redis = GenericContainer<Nothing>("redis:5.0.7-alpine")
-            .apply { withExposedPorts(26379) }
+        val redis = GenericContainer<Nothing>("redis:6-alpine")
+            .apply { withExposedPorts(6379) }
 
         @JvmStatic
         @DynamicPropertySource
@@ -80,7 +80,7 @@ internal class ReleasedProductServiceTest(@Autowired val productService: Release
         val exception = assertThrows(ProductNotFoundException::class.java) {
             productService.getByCode(invalidCode)
         }
-        assertThat(exception.message).isEqualTo("product with $invalidCode is not found")
+        assertThat(exception.message).contains("product with $invalidCode is not found")
     }
 
     @Test

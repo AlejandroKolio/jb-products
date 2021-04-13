@@ -50,11 +50,4 @@ internal class ProductUtilTest {
         }
         assertThat(exception.message).isEqualTo(String.format("provided date format '%s' is iinvalid", value))
     }
-
-    @Test
-    internal fun name() {
-        val file = Paths.get("/Users/aleksandrshakhov/development/other/jb-products/src/main/resources/builds/PC-2020.2.tar.gz").toFile()
-        val result = DigestUtils.sha256Hex(FileInputStream(file))
-        print(result)
-    }
 }
