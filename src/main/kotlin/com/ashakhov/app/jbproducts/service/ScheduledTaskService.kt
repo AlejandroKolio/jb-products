@@ -113,8 +113,7 @@ class ScheduledTaskService(
                         productService.getByCode(productCode).releasedBuilds
                             .filter { it.version == cc.version }
                             .filter { it.productInfo != null }
-                            .map { it.productInfo }
-                            .firstOrNull()
+                            .map { it.productInfo }.firstOrNull()
                     } catch (ex: ProductNotFoundException) {
                         null
                     }

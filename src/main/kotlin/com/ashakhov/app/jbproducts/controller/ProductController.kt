@@ -25,16 +25,16 @@ class ProductController(val productService: ReleasedProductService,
     @GetMapping("/{productCode}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getProductsInfoByCode(
             @PathVariable(name = "productCode", required = true) productCode: String,
-    ): ProductInfo {
-        return productInfoService.getByCode(productCode)
+    ): ReleasedProduct {
+        return productService.getByCode(productCode)
     }
 
     @GetMapping("/{productCode}/{buildNumber}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getProductsInfoByCodeAndBuidNumber(
             @PathVariable(name = "productCode", required = true) productCode: String,
             @PathVariable(name = "buildNumber", required = true) buildNumber: String
-    ): Any {
-        TODO("not implemented yet")
+    ): ReleasedProduct {
+        return productService.getByCodeAndBuildNumber(productCode, buildNumber)
     }
 
     @GetMapping("/status", produces = [MediaType.APPLICATION_JSON_VALUE])

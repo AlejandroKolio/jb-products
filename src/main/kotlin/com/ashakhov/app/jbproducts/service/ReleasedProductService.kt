@@ -5,8 +5,6 @@ import com.ashakhov.app.jbproducts.logger
 import com.ashakhov.app.jbproducts.model.ReleasedProduct
 import com.ashakhov.app.jbproducts.repository.ReleasedProductRepository
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Flux
-import reactor.kotlin.core.publisher.toFlux
 
 @Service
 class ReleasedProductService(val releasedProductRepository: ReleasedProductRepository) {
@@ -43,5 +41,27 @@ class ReleasedProductService(val releasedProductRepository: ReleasedProductRepos
         }
         logger.debug("product with code=${product.code} is found: product=$product")
         return product
+    }
+
+    /**
+     * Retrieve product by code and build number
+     * @param productCode reprsents product code (redis id)
+     * @param buildNumber represents buildNumber inside product-info enitity
+     * @return {@code ReleasedProduct}
+     * @throws ProductNotFoundException if build number or product code is not found
+     */
+    fun getByCodeAndBuildNumber(productCode: String, buildNumber: String): ReleasedProduct {
+        val product = getByCode(code = productCode)
+
+        val build = product.releasedBuilds
+            .filter { it.productInfo != null }
+            .filter { it.productInfo?.buildNumber == buildNumber }
+            .map { it }
+            .toList()
+
+        if (build.isEmpty()) {
+            throw ProductNotFoundException("product=$productCode with build=$buildNumber is not found")
+        }
+        return product.copy(code = productCode, releasedBuilds = build)
     }
 }

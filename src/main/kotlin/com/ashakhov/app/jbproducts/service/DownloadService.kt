@@ -18,6 +18,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.Instant
 import kotlin.streams.toList
 
 @Service
@@ -114,7 +115,10 @@ class DownloadService(
             return
         }
         val product = releasedProductService.getByCode(code)
+
+        productInfo.downloadDate = Instant.now()
         product.releasedBuilds.find { it.version == productInfo.version }?.productInfo = productInfo
+
         releasedProductService.save(product)
     }
 }

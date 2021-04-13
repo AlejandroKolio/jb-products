@@ -3,6 +3,7 @@ package com.ashakhov.app.jbproducts.model
 import org.springframework.data.annotation.Id
 import org.springframework.data.redis.core.RedisHash
 import java.io.Serializable
+import java.time.Instant
 
 @RedisHash("ReleasedProduct")
 data class ReleasedProduct(
@@ -15,5 +16,5 @@ data class ReleasedBuild(
     val downloadUrl: String,
     val checksumUrl: String,
     val size: Long,
-    var productInfo: ProductInfo?
+    var productInfo: ProductInfo?,
 )
