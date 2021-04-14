@@ -1,0 +1,210 @@
+openapi: '3.0.2'
+info:
+  title: JetBrains Products
+  version: 'v1'
+  description: JetBrains Products API
+  contact: { }
+servers:
+  - url: 'https://localhost/'
+paths:
+  /products/status:
+    get:
+      summary: general information about released products
+      operationId: GeneralInfoProducts
+      tags:
+        - products
+      responses:
+        '200':
+          description: The global response to successfully request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReleasedProduct'
+        '404':
+          description: The general response with errors of the data-validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          description: A default response with the error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /products/{productCode}:
+    get:
+      summary: general information about released product by code
+      operationId: GeneralInfoProductsByCode
+      tags:
+        - products
+      parameters:
+        - in: path
+          name: productCode
+          description: product code
+          required: true
+          schema:
+            type: string
+            format: 'text'
+            example: PY
+      responses:
+        '200':
+          description: The global response to successfully request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReleasedProduct'
+        '404':
+          description: The general response with errors of the data-validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          description: A default response with the error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /products/{productCode}/{buildNumber}:
+    get:
+      summary: general information about released product by code and build number
+      operationId: GeneralInfoProductsByCodeAndBuildNumber
+      tags:
+        - products
+      parameters:
+        - in: path
+          name: productCode
+          description: product code
+          required: true
+          schema:
+            type: string
+            format: 'text'
+            example: PY
+        - in: path
+          name: buildNumber
+          description: build number
+          required: true
+          schema:
+            type: string
+            format: 'text'
+            example: 2020.345.12
+      responses:
+        '200':
+          description: The global response to successfully request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReleasedProduct'
+        '404':
+          description: The general response with errors of the data-validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          description: A default response with the error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /products/refresh/{productCode}:
+    post:
+      summary: refresh information about released product(s)
+      operationId: GeneralInfoProductsRefresh
+      tags:
+        - products
+      parameters:
+        - in: path
+          name: productCode
+          description: product code
+          required: false
+          schema:
+            type: string
+            format: 'text'
+            example: PY
+      responses:
+        '202':
+          description: The global response to successfully request
+        '404':
+          description: The general response with errors of the data-validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          description: A default response with the error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    # Response
+    ReleasedProduct:
+      properties:
+        code:
+          type: string
+          example: IE
+          description: product code
+        releasedBuilds:
+          type: array
+          items:
+            type: object
+            properties:
+              version:
+                type: string
+                description: build version
+                example: 2020.2
+              downloadUrl:
+                type: string
+                description: path to download *.tar.gz
+                example: https://www.products.com/IE-2020.tar.gz
+              checksumUrl:
+                type: string
+                description: path to checksum of specific *.tar.gz
+                example: https://www.products.com/IE-2020.tar.gz.sha256
+              size:
+                type: integer
+                format: int64
+                description: build size
+                example: 23241235
+              productInfo:
+                type: object
+                description: product information from distributive
+
+    # Error
+    Error:
+      type: object
+      required:
+        - id
+        - status
+        - code
+        - message
+      properties:
+        id:
+          type: string
+          description: Error id
+          example: fa32b549ef9747ad933f17e159fac685
+        status:
+          type: integer
+          format: int32
+          description: HTTP status
+          example: 400
+        code:
+          type: string
+          description: The internal error code
+          example: WRONG_REQUEST_FORMAT
+        message:
+          type: string
+          description: Comprehensive error message
+          example: expiration-date is required; name format is invalid; start-date is required
+
+    ErrorResponse:
+      description: The global response with an error
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object

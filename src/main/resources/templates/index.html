@@ -32,7 +32,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="product : ${products}">
-                    <td th:text="${product.code}">Code</td>
+                    <td style="width:100px" class="align-middle badge badge-info" th:text="${product.code}">Code</td>
                     <td>
                         <table id="tbl2" class="table table-bordered" style="width: 50%">
                             <thead>
@@ -43,9 +43,9 @@
                             </tr>
                             </thead>
                             <tr th:each="build : ${product.releasedBuilds}">
-                                <td th:text="${build.version}">Version</td>
+                                <td style="width:100px" class="badge badge-info" th:text="${build.version}">Version</td>
                                 <td th:text="${build.size}">Size</td>
-                                <td th:text="${build.productInfo}">Size</td>
+                                <td th:text="${build.productInfo}">ProductInfo</td>
                             </tr>
                         </table>
                     </td>
