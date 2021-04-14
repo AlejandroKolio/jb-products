@@ -40,18 +40,24 @@ class ScheduledTaskService(
     lateinit var path: String
 
     @Scheduled(fixedRate = 3_600_000)
-    fun run() {
+    fun refresh() {
+        refresh(null)
+    }
+
+    fun refresh(code: String?) {
         productsNotOlderThanOneYear()
             .log("start products task...")
             .doOnNext { productService.save(it) }
-            .onErrorResume { error ->
-                throw RemoteServerException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    error.message ?: "Server Error"
-                )
-            }
+            .onErrorResume { error -> throw RemoteServerException(HttpStatus.INTERNAL_SERVER_ERROR, error.message ?: "Server Error") }
             .log("product saved successfully", Level.INFO, true)
-            .doOnComplete { productService.getAll().forEach { downloadService.downloadProduct(it) } }
+//            .doOnComplete {
+//                if (code == null) {
+//                    productService.getAll().forEach { downloadService.downloadProduct(it) }
+//                } else {
+//                    val releasedProduct = productService.getByCode(code)
+//                    downloadService.downloadProduct(releasedProduct)
+//                }
+//            }
             .subscribeOn(Schedulers.boundedElastic())
             .subscribe()
     }
@@ -168,8 +174,7 @@ class ScheduledTaskService(
                 .host("data.services.jetbrains.com")
                 .path("products/releases")
                 .queryParam("code", code)
-                .build()
-        }
+                .build() }
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .onStatus(HttpStatus::is5xxServerError) { response ->

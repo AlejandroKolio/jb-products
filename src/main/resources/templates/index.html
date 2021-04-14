@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Spring Boot Thymeleaf Application - Bootstrap Table</title>
+
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+        <a class="navbar-brand" href="/">JetBrains Products</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-10 mt-5 mb-5">
+            <table id="tbl1" class="table table-bordered" style="width: 100%">
+                <thead>
+                <tr>
+                    <th>Codes</th>
+                    <th>Builds</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="product : ${products}">
+                    <td th:text="${product.code}">Code</td>
+                    <td>
+                        <table id="tbl2" class="table table-bordered" style="width: 50%">
+                            <thead>
+                            <tr>
+                                <th>Version</th>
+                                <th>Size</th>
+                                <th>Product Info</th>
+                            </tr>
+                            </thead>
+                            <tr th:each="build : ${product.releasedBuilds}">
+                                <td th:text="${build.version}">Version</td>
+                                <td th:text="${build.size}">Size</td>
+                                <td th:text="${build.productInfo}">Size</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+
+<script>
+
+</script>
+
+</body>
+</html>
