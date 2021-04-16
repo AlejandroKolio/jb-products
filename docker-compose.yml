@@ -1,4 +1,4 @@
-version: "3.5"
+version: "3.7"
 
 services:
   redis:
@@ -11,6 +11,21 @@ services:
       - ${REDIS_EXPOSE_PORT:-16379}:6379
     networks:
       development-network:
+
+  jbproducts:
+    build: .
+    container_name: jbproducts
+    restart: always
+    depends_on:
+      - redis
+    environment:
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+      - SPRING_REDIS_SSL=false
+    ports:
+      - "8080:8080"
+    networks:
+      - development-network
 
 networks:
   development-network:

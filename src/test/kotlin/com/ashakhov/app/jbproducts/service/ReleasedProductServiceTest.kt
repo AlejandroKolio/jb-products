@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.GenericContainer
@@ -21,6 +22,7 @@ import kotlin.streams.toList
 
 @Testcontainers
 @SpringBootTest
+@ActiveProfiles("test")
 internal class ReleasedProductServiceTest(@Autowired val productService: ReleasedProductService) {
 
     companion object {
@@ -60,6 +62,8 @@ internal class ReleasedProductServiceTest(@Autowired val productService: Release
     @Test
     @DisplayName("product service --> should find product by valid code")
     internal fun findProductByValidCodeTest() {
+        productService.save(product)
+
         val savedProduct = productService.getByCode(product.code)
         assertThat(savedProduct).isNotNull
         assertThat(savedProduct).extracting { it.code }.isEqualTo(product.code)
