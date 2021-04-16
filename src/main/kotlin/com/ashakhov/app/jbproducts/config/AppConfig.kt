@@ -64,7 +64,7 @@ class AppConfig {
         val executor = ThreadPoolTaskExecutor()
         executor.corePoolSize = 5
         executor.maxPoolSize = 15
-        executor.setQueueCapacity(25)
+        executor.setQueueCapacity(50)
 
         return executor
     }

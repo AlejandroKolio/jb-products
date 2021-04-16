@@ -3,6 +3,7 @@ package com.ashakhov.app.jbproducts.service
 import com.ashakhov.app.jbproducts.logger
 import com.ashakhov.app.jbproducts.model.ProductInfo
 import com.ashakhov.app.jbproducts.model.ReleasedProduct
+import com.ashakhov.app.jbproducts.model.Status
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
@@ -19,6 +20,7 @@ import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.Instant
+import kotlin.math.ceil
 import kotlin.streams.toList
 
 @Service
@@ -60,13 +62,19 @@ class DownloadService(
      * @param version represents specific product version
      * @return Boolean
      */
-    private fun isChanged(code: String, version: String, checksumUrl: String): Boolean {
+    private fun isChanged(code: String, version: String, checksumUrl: String, size: Long): Boolean {
         val file = Paths.get("$buildsPath/$code-$version.tar.gz").toFile()
         if (file.exists()) {
             val remoteSha256 = URL(checksumUrl).readText().substringBefore(" ")
             val localSha256 = DigestUtils.sha256Hex(FileInputStream(file))
-            logger.info("build is not changed; remote: $remoteSha256 local: $localSha256")
-            return remoteSha256 != localSha256
+            if (remoteSha256 == localSha256 && file.length() == size) {
+                logger.info("build=$code-$version is not changed")
+                val prd = releasedProductService.getByCode(code)
+                prd.releasedBuilds.find { current -> current.version == version }?.status = Status.COMPLETE
+                releasedProductService.save(prd)
+                return true
+            }
+            return false
         }
         return true
     }
@@ -77,8 +85,13 @@ class DownloadService(
      */
     fun downloadProduct(product: ReleasedProduct) {
         val futures = product.releasedBuilds.stream()
-            .filter { isChanged(product.code, it.version, it.checksumUrl) }
-            .map { asyncExecutor.submit { downloadAndUnzip(product.code, it.version, it.downloadUrl) } }
+            .filter { isChanged(product.code, it.version, it.checksumUrl, it.size) }
+            .map {
+                val prd = releasedProductService.getByCode(product.code)
+                prd.releasedBuilds.find { current -> current.version == it.version }?.status = Status.DOWNLOADING
+                releasedProductService.save(prd)
+                it
+            }.map { asyncExecutor.submit { downloadAndUnzip(product.code, it.version, it.downloadUrl) } }
             .toList()
 
         futures.stream().forEach { it.get() }
@@ -115,9 +128,9 @@ class DownloadService(
             return
         }
         val product = releasedProductService.getByCode(code)
-
         productInfo.downloadDate = Instant.now()
         product.releasedBuilds.find { it.version == productInfo.version }?.productInfo = productInfo
+        product.releasedBuilds.find { it.version == productInfo.version }?.status = Status.COMPLETE
 
         releasedProductService.save(product)
     }

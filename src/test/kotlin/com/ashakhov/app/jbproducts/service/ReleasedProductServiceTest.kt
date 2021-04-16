@@ -3,6 +3,7 @@ package com.ashakhov.app.jbproducts.service
 import com.ashakhov.app.jbproducts.exception.ProductNotFoundException
 import com.ashakhov.app.jbproducts.model.ReleasedBuild
 import com.ashakhov.app.jbproducts.model.ReleasedProduct
+import com.ashakhov.app.jbproducts.model.Status
 import com.github.javafaker.Faker
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.assertThrows
@@ -46,7 +47,7 @@ internal class ReleasedProductServiceTest(@Autowired val productService: Release
     internal fun setUp() {
         product = ReleasedProduct(
             "IE",
-            listOf(ReleasedBuild("2020.1", "http://example.com", "http://example.come/sha256", 100, null))
+            listOf(ReleasedBuild("2020.1", Status.PENDING, "http://example.com", "http://example.come/sha256", 100, null))
         )
     }
 
@@ -95,6 +96,7 @@ internal class ReleasedProductServiceTest(@Autowired val productService: Release
             val builds = Stream.generate {
                 ReleasedBuild(
                     faker.numerify("202#.#.#"),
+                    Status.PENDING,
                     "https://example.com",
                     "https://example.com/sha256",
                     faker.random().nextLong(),

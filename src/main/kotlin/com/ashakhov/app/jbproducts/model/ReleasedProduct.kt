@@ -13,6 +13,7 @@ data class ReleasedProduct(
 
 data class ReleasedBuild(
     val version: String,
+    var status: Status = Status.PENDING,
     val downloadUrl: String,
     val checksumUrl: String,
     val size: Long,

@@ -40,12 +40,14 @@
                                 <th>Version</th>
                                 <th>Size</th>
                                 <th>Product Info</th>
+                                <th>Status</th>
                             </tr>
                             </thead>
                             <tr th:each="build : ${product.releasedBuilds}">
                                 <td th:text="${build.version}">Version</td>
                                 <td th:text="${build.size}">Size</td>
                                 <td th:text="${build.productInfo}">ProductInfo</td>
+                                <td th:text="${build.status}">Status</td>
                             </tr>
                         </table>
                     </td>

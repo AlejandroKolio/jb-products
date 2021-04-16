@@ -124,10 +124,16 @@ class ScheduledTaskService(
                     } catch (ex: ProductNotFoundException) {
                         null
                     }
+                    val status: Status = if (foundProductInfo != null) {
+                        Status.COMPLETE
+                    } else {
+                        Status.PENDING
+                    }
 
                     Mono.just(
                         ReleasedBuild(
                             cc.version,
+                            status = status,
                             linux.link,
                             linux.checksumLink,
                             linux.size,
