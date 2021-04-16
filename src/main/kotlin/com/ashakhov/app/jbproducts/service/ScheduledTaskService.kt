@@ -37,9 +37,9 @@ class ScheduledTaskService(
     val downloadService: DownloadService
 ) {
     @Value(value = "\${app.product-info.path}")
-    lateinit var path: String
+    private lateinit var path: String
 
-    @Scheduled(fixedRate = 3_600_000)
+    @Scheduled(cron = "\${cronExpression}")
     fun refresh() {
         refresh(null)
     }
@@ -50,14 +50,14 @@ class ScheduledTaskService(
             .doOnNext { productService.save(it) }
             .onErrorResume { error -> throw RemoteServerException(HttpStatus.INTERNAL_SERVER_ERROR, error.message ?: "Server Error") }
             .log("product saved successfully", Level.INFO, true)
-//            .doOnComplete {
-//                if (code == null) {
-//                    productService.getAll().forEach { downloadService.downloadProduct(it) }
-//                } else {
-//                    val releasedProduct = productService.getByCode(code)
-//                    downloadService.downloadProduct(releasedProduct)
-//                }
-//            }
+            .doOnComplete {
+                if (code == null) {
+                    productService.getAll().forEach { downloadService.downloadProduct(it) }
+                } else {
+                    val releasedProduct = productService.getByCode(code)
+                    downloadService.downloadProduct(releasedProduct)
+                }
+            }
             .subscribeOn(Schedulers.boundedElastic())
             .subscribe()
     }

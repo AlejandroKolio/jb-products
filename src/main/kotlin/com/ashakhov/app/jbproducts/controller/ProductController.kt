@@ -41,9 +41,14 @@ class ProductController(
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @PostMapping(path = ["/refresh/{productCode}"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun refresh(@PathVariable(name = "productCode", required = false) productCode: String?) {
-        scheduledTaskService.refresh(productCode)
+    @PostMapping(path = ["/refresh"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun refresh() {
+        scheduledTaskService.refresh()
     }
 
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @PostMapping(path = ["/refresh/{productCode}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun refreshByProductCode(@PathVariable(name = "productCode", required = true) productCode: String?) {
+        scheduledTaskService.refresh(productCode)
+    }
 }

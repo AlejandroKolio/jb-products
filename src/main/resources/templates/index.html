@@ -24,15 +24,15 @@
     <div class="row">
         <div class="col-lg-10 mt-5 mb-5">
             <table id="tbl1" class="table table-bordered" style="width: 100%">
-                <thead>
+                <thead class="thead-dark">
                 <tr>
-                    <th>Codes</th>
-                    <th>Builds</th>
+                    <th scope="col">Codes</th>
+                    <th scope="col">Builds</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="product : ${products}">
-                    <td style="width:100px" class="align-middle badge badge-info" th:text="${product.code}">Code</td>
+                    <td th:text="${product.code}">Code</td>
                     <td>
                         <table id="tbl2" class="table table-bordered" style="width: 50%">
                             <thead>
@@ -43,7 +43,7 @@
                             </tr>
                             </thead>
                             <tr th:each="build : ${product.releasedBuilds}">
-                                <td style="width:100px" class="badge badge-info" th:text="${build.version}">Version</td>
+                                <td th:text="${build.version}">Version</td>
                                 <td th:text="${build.size}">Size</td>
                                 <td th:text="${build.productInfo}">ProductInfo</td>
                             </tr>
