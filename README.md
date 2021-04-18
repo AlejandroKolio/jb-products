@@ -24,7 +24,7 @@ Stop containers:
 
     docker-compose down
 
-Speciication and API
+API
 --------------------
     path to spec: src/main/resources/openapi.yaml
 ![Alt text](src/main/resources/openapi.png "Title")

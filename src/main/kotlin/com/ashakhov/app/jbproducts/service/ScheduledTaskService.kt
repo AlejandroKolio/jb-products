@@ -39,8 +39,7 @@ class ScheduledTaskService(
     @Value(value = "\${app.product-info.path}")
     private lateinit var path: String
 
-    //@Scheduled(cron = "\${cronExpression}")
-    @Scheduled(fixedRate = 600_000)
+    @Scheduled(cron = "\${cronExpression}")
     fun refresh() {
         refresh(null)
     }

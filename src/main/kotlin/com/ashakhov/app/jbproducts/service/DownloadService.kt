@@ -87,9 +87,8 @@ class DownloadService(
         val futures = product.releasedBuilds.stream()
             .filter { isChanged(product.code, it.version, it.checksumUrl, it.size) }
             .map {
-                val prd = releasedProductService.getByCode(product.code)
-                prd.releasedBuilds.find { current -> current.version == it.version }?.status = Status.DOWNLOADING
-                releasedProductService.save(prd)
+                product.releasedBuilds.find { current -> current.version == it.version }?.status = Status.DOWNLOADING
+                releasedProductService.save(product)
                 it
             }.map { asyncExecutor.submit { downloadAndUnzip(product.code, it.version, it.downloadUrl) } }
             .toList()
