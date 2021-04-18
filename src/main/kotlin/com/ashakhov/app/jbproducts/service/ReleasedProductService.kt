@@ -16,7 +16,7 @@ class ReleasedProductService(val releasedProductRepository: ReleasedProductRepos
      * @param product represents data to save.
      */
     fun save(product: ReleasedProduct): ReleasedProduct {
-        logger.debug("saving code=${product.code}, product=$product")
+        logger.debug("saving code=${product.code}")
         return releasedProductRepository.save(product)
     }
 
@@ -39,7 +39,7 @@ class ReleasedProductService(val releasedProductRepository: ReleasedProductRepos
         val product = releasedProductRepository.findById(code).orElseThrow {
             ProductNotFoundException("product with $code is not found")
         }
-        logger.debug("product with code=${product.code} is found: product=$product")
+        logger.debug("product with code=${product.code} is found")
         return product
     }
 

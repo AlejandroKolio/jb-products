@@ -20,7 +20,6 @@ import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.Instant
-import kotlin.math.ceil
 import kotlin.streams.toList
 
 @Service
@@ -29,6 +28,7 @@ class DownloadService(
     val releasedProductService: ReleasedProductService,
     val objectMapper: ObjectMapper
 ) {
+    val lock = Any()
 
     @Value("\${app.builds.path}")
     lateinit var buildsPath: String
@@ -45,6 +45,11 @@ class DownloadService(
         connection.instanceFollowRedirects = false
 
         logger.info("start [$code-$version] downloading...")
+        synchronized(lock) {
+            val product = releasedProductService.getByCode(code)
+            product.releasedBuilds.find { current -> current.version == version }?.status = Status.DOWNLOADING
+            releasedProductService.save(product)
+        }
 
         FileUtils.copyURLToFile(link, path.toFile(), 10000, 10000)
 
@@ -69,9 +74,11 @@ class DownloadService(
             val localSha256 = DigestUtils.sha256Hex(FileInputStream(file))
             if (remoteSha256 == localSha256 && file.length() == size) {
                 logger.info("build=$code-$version is not changed")
-                val prd = releasedProductService.getByCode(code)
-                prd.releasedBuilds.find { current -> current.version == version }?.status = Status.COMPLETE
-                releasedProductService.save(prd)
+                synchronized(lock) {
+                    val prd = releasedProductService.getByCode(code)
+                    prd.releasedBuilds.find { current -> current.version == version }?.status = Status.COMPLETE
+                    releasedProductService.save(prd)
+                }
                 return true
             }
             return false
@@ -86,11 +93,7 @@ class DownloadService(
     fun downloadProduct(product: ReleasedProduct) {
         val futures = product.releasedBuilds.stream()
             .filter { isChanged(product.code, it.version, it.checksumUrl, it.size) }
-            .map {
-                product.releasedBuilds.find { current -> current.version == it.version }?.status = Status.DOWNLOADING
-                releasedProductService.save(product)
-                it
-            }.map { asyncExecutor.submit { downloadAndUnzip(product.code, it.version, it.downloadUrl) } }
+            .map { asyncExecutor.submit { downloadAndUnzip(product.code, it.version, it.downloadUrl) } }
             .toList()
 
         futures.stream().forEach { it.get() }
@@ -126,11 +129,12 @@ class DownloadService(
             logger.info("product info is empty")
             return
         }
-        val product = releasedProductService.getByCode(code)
-        productInfo.downloadDate = Instant.now()
-        product.releasedBuilds.find { it.version == productInfo.version }?.productInfo = productInfo
-        product.releasedBuilds.find { it.version == productInfo.version }?.status = Status.COMPLETE
-
-        releasedProductService.save(product)
+        synchronized(lock) {
+            val product = releasedProductService.getByCode(code)
+            productInfo.downloadDate = Instant.now()
+            product.releasedBuilds.find { it.version == productInfo.version }?.productInfo = productInfo
+            product.releasedBuilds.find { it.version == productInfo.version }?.status = Status.COMPLETE
+            releasedProductService.save(product)
+        }
     }
 }

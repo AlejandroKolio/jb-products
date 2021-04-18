@@ -19,7 +19,6 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
 import reactor.kotlin.core.publisher.toFlux
 import reactor.util.retry.Retry
 import java.time.Duration
@@ -58,7 +57,6 @@ class ScheduledTaskService(
                     downloadService.downloadProduct(releasedProduct)
                 }
             }
-            .subscribeOn(Schedulers.boundedElastic())
             .subscribe()
     }
 
